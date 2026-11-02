@@ -13,9 +13,9 @@ jobs:
     - name: Descargar codigo fuente
       uses: actions/checkout@v4
 
-    - name: Compilar usando el SDK oficial en Docker
+    - name: Compilar usando el SDK oficial de la Comunidad
       run: |
-        docker run --rm -v ${{ github.workspace }}:/src john-tornblom/ps5-payload-sdk
+        docker run --rm -v ${{ github.workspace }}:/src ghcr.io/ps5-payload-dev/sdk:latest
 
     - name: Subir archivo ELF terminado
       uses: actions/upload-artifact@v4
