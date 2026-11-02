@@ -1,0 +1,24 @@
+name: Compilar Payload PS5
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Descargar codigo fuente
+      uses: actions/checkout@v4
+
+    - name: Compilar usando el SDK oficial en Docker
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/src john-tornblom/ps5-payload-sdk
+
+    - name: Subir archivo ELF terminado
+      uses: actions/upload-artifact@v4
+      with:
+        name: ps5-payload-elf
+        path: payload.elf
