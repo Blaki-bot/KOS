@@ -1,4 +1,4 @@
-name: Compilar Payload PS5
+name: Compilar Payload PS5 Nativo
 
 on:
   push:
@@ -10,14 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Descargar codigo fuente
+    - name: Descargar tu codigo fuente
       uses: actions/checkout@v4
 
-    - name: Compilar usando el SDK oficial de la Comunidad
+    - name: Instalar compilador de PS5 (Clang/LLVM)
       run: |
-        docker run --rm -v ${{ github.workspace }}:/src ghcr.io/ps5-payload-dev/sdk:latest
+        sudo apt-get update
+        sudo apt-get install -y clang lld make
 
-    - name: Subir archivo ELF terminado
+    - name: Descargar dependencias del SDK de John Tornblom
+      run: |
+        git clone --depth=1 https://github.com sdk_folder
+
+    - name: Compilar el codigo de forma directa
+      run: |
+        # Usamos el compilador instalando los paths del SDK descargado
+        clang -target x86_64-pc-freebsd12 -shared -fPIC -nostdlib -O2 \
+          -isystem sdk_folder/include \
+          main.c -o payload.elf \
+          -Wl,--entry=payload_main -Wl,--allow-shlib-undefined
+
+    - name: Guardar tu archivo ELF final
       uses: actions/upload-artifact@v4
       with:
         name: ps5-payload-elf
